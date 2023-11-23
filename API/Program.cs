@@ -11,7 +11,7 @@ IConfigurationRoot configuration = new ConfigurationBuilder()
 
 // Add services to the container.
 builder.Services.AddControllers();
-builder.Services.AddDbContext<TestDbContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseMySql(configuration.GetConnectionString("Default"), serverVersion));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

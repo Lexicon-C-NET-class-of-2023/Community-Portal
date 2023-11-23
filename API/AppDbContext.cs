@@ -3,13 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API
 {
-    public class TestDbContext : DbContext
+    public class AppDbContext : DbContext
     {
-        public TestDbContext(DbContextOptions<TestDbContext> options) : base(options) { }
-
-
-
-
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Forum> Forums { get; set; }
