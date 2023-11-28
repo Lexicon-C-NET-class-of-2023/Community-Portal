@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "UserId": 1,
+    "Title": "2001: A Space Odyssey (1968)",
+    "Posts": "Best movie in the world!"
+  },
+  {
+    "id": 2,
+    "UserId": 2,
+    "Title": "Gudfadern (1972)",
+    "Posts": "Second best movie in the world!"
+  },
+  {
+    "id": 3,
+    "UserId": 3,
+    "Title": "Citizen Kane (1941)",
+    "Posts": "Third best movie in the world!"
+  },
+  {
+    "id": 4,
+    "UserId": 4,
+    "Title": "Jeanne Dielman, 23, Quai du Commerce, 1080 Bruxelles (1975)",
+    "Posts": "Fourth best movie in the world!"
+  },
+  {
+    "id": 5,
+    "UserId": 5,
+    "Title": "Raiders of the Lost Ark (1981)",
+    "Posts": "Fifth best movie in the world!"
+  },
+  {
+    "id": 6,
+    "UserId": 6,
+    "Title": "La Dolce Vita (1960)",
+    "Posts": "Sixth best movie in the world!"
+  },
+  {
+    "id": 7,
+    "UserId": 7,
+    "Title": "Seven Samurai (1954)",
+    "Posts": "Seventh best movie in the world!"
+  },
+  {
+    "id": 8,
+    "UserId": 8,
+    "Title": "In the Mood for Love (2000)",
+    "Posts": "Eighth best movie in the world!"
+  },
+  {
+    "id": 9,
+    "UserId": 9,
+    "Title": "There Will Be Blood (2007)",
+    "Posts": "Nineth best movie in the world!"
+  },
+  {
+    "id": 10,
+    "UserId": 10,
+    "Title": "Singin’ in the Rain (1952)",
+    "Posts": "Tenth best movie in the world!"
+  }
+]
