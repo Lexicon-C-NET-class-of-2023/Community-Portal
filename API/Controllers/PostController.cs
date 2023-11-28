@@ -22,7 +22,7 @@ namespace API.Controllers
         [ProducesResponseType(200)]
         public IEnumerable<Post> Get()
         {
-            //LoadMockedDataIfTableIsEmpty();
+            LoadMockedDataIfTableIsEmpty();
             return _db.Posts.ToList();
         }
 
@@ -74,9 +74,9 @@ namespace API.Controllers
         {
             if (_db.Posts.Count() == 0)
             {
-                string file = File.ReadAllText("./Mocked/Posts.json");
-                var Posts = JsonSerializer.Deserialize<List<Post>>(file);
-                _db.AddRange(Posts);
+                string file = File.ReadAllText("./Mocked/posts.json");
+                var posts = JsonSerializer.Deserialize<List<Post>>(file);
+                _db.AddRange(posts);
                 _db.SaveChanges();
             }
         }
