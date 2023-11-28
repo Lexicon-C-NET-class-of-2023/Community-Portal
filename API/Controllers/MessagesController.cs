@@ -4,13 +4,14 @@ using System.Text.Json;
 
 namespace API.Controllers
 {
-    public class MessageController
+    [Route("[controller]")]
+    [ApiController]
+    public class MessagesController
     {
-        private readonly ILogger<MessageController> _logger;
+        private readonly ILogger<MessagesController> _logger;
         private readonly AppDbContext _db;
 
-
-        public MessageController(ILogger<MessageController> logger, AppDbContext db)
+        public MessagesController(ILogger<MessagesController> logger, AppDbContext db)
         {
             _logger = logger;
             _db = db;
@@ -18,7 +19,7 @@ namespace API.Controllers
 
 
         //GET
-        [HttpGet("messages")]
+        [HttpGet()]
         [ProducesResponseType(200)]
         public IEnumerable<Message> Get()
         {
@@ -28,9 +29,9 @@ namespace API.Controllers
 
 
         //GET (BY ID)
-        [HttpGet("messages/{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public Message Get(int id)
         {
             return _db.Messages.Where(message => message.Id == id).FirstOrDefault();
@@ -38,7 +39,7 @@ namespace API.Controllers
 
 
         //POST
-        [HttpPost("messages")]
+        [HttpPost()]
         [ProducesResponseType(201)]
         public void Post([FromBody] Message value)
         {
@@ -49,18 +50,22 @@ namespace API.Controllers
 
 
         //PUT
-        [HttpPut("messages/{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(200)]
         public void Put(int id, [FromBody] Message value)
         {
-            _db.Remove(_db.Messages.Where(message => message.Id == id).FirstOrDefault());
-            _db.Add(value);
-            _db.SaveChanges();
+            var message = _db.Messages.Where(message => message.Id == id).FirstOrDefault();
+
+            if (value.Content != null && value.Content != "")
+            {
+                message.Content = value.Content;
+                _db.SaveChanges();
+            }
         }
 
 
         //DELETE
-        [HttpDelete("messages/{id}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         public void Delete(int id)
         {
