@@ -8,6 +8,7 @@ namespace Community_Portal
         public int Id { get; set; }
         public DateTime Created { get; set; }
         public int UserId { get; set; }
+        public int ForumId { get; set; }
         //public List<Reply>? Replies { get; set; }
 
         [Required]
