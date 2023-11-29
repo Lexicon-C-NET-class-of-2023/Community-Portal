@@ -9,7 +9,7 @@ namespace Community_Portal
         public DateTime Created { get; set; }
         public int UserId { get; set; }
         public int ForumId { get; set; }
-        //public List<Reply>? Replies { get; set; }
+        public Forum Forum { get; set; } = null!;
 
         [Required]
         [MaxLength(200)]

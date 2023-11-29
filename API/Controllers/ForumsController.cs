@@ -4,13 +4,15 @@ using System.Text.Json;
 
 namespace API.Controllers
 {
-    public class ForumController
+    [Route("[controller]")]
+    [ApiController]
+    public class ForumsController
     {
-        private readonly ILogger<ForumController> _logger;
+        private readonly ILogger<ForumsController> _logger;
         private readonly AppDbContext _db;
 
 
-        public ForumController(ILogger<ForumController> logger, AppDbContext db)
+        public ForumsController(ILogger<ForumsController> logger, AppDbContext db)
         {
             _logger = logger;
             _db = db;
@@ -18,7 +20,7 @@ namespace API.Controllers
 
 
         //GET
-        [HttpGet("Forums")]
+        [HttpGet()]
         [ProducesResponseType(200)]
         public IEnumerable<Forum> Get()
         {
@@ -28,7 +30,7 @@ namespace API.Controllers
 
 
         //GET (BY ID)
-        [HttpGet("Forums/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public Forum Get(int id)
@@ -38,7 +40,7 @@ namespace API.Controllers
 
 
         //POST
-        [HttpPost("Forums")]
+        [HttpPost("{userId}")]
         [ProducesResponseType(201)]
         public void Post([FromBody] Forum value)
         {
@@ -49,18 +51,17 @@ namespace API.Controllers
 
 
         //PUT
-        [HttpPut("Forums/{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(200)]
         public void Put(int id, [FromBody] Forum value)
         {
-            _db.Remove(_db.Forums.Where(Forum => Forum.Id == id).FirstOrDefault());
-            _db.Add(value);
-            _db.SaveChanges();
+            //NOT DONE YET
+            
         }
 
 
         //DELETE
-        [HttpDelete("Forums/{id}")]
+        [HttpDelete("{id}")]
         [ProducesResponseType(200)]
         public void Delete(int id)
         {
