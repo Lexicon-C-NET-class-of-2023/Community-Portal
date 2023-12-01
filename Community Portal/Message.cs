@@ -7,7 +7,7 @@ namespace Community_Portal
     {
         public int Id { get; set; }
         public DateTime Created { get; set; }
-        public int UserId { get; set; }
+        //public int UserId { get; set; }
         public int Recipient { get; set; }
 
         [Required]

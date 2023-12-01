@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Community_Portal
 {
@@ -8,10 +10,11 @@ namespace Community_Portal
         public int Id { get; set; }
         public int UserId { get; set; }
 
-        [Required]
         [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
-        public string Title { get; set; }
+        [DefaultValue("Forum Title")]
+        public string? Title { get; set; }
+        //[JsonIgnore]
         public List<Post> Posts { get; set; } = new List<Post>();
     }
 }

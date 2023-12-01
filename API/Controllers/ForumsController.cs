@@ -1,12 +1,16 @@
 ﻿using Community_Portal;
+using Community_Portal.DTO_s;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Immutable;
 using System.Text.Json;
+
 
 namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ForumsController
+    public class ForumsController : ControllerBase
     {
         private readonly ILogger<ForumsController> _logger;
         private readonly AppDbContext _db;
@@ -21,65 +25,97 @@ namespace API.Controllers
 
         //GET
         [HttpGet()]
-        [ProducesResponseType(200)]
-        public IEnumerable<Forum> Get()
-        {
-            //LoadMockedDataIfTableIsEmpty();
-            return _db.Forums.ToList();
-        }
+        public async Task<ActionResult<List<Forum>>> GetForums() => await _db.Forums.Include(f => f.Posts).ToListAsync();
 
 
-        //GET (BY ID)
+
+        //GET BY ID
         [HttpGet("{id}")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public Forum Get(int id)
+        public async Task<ActionResult<Forum>> GetForumById(int id)
         {
-            return _db.Forums.Where(Forum => Forum.Id == id).FirstOrDefault();
+            var forum = await _db.Forums
+                .Include(f => f.Posts)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (forum is null) return NotFound("No forum with that id");
+            return Ok(forum);
         }
 
 
         //POST
         [HttpPost("{userId}")]
-        [ProducesResponseType(201)]
-        public void Post([FromBody] Forum value)
+        public async Task<ActionResult<Forum>> CreateForum(ForumCreateDTO request, int userId)
         {
-            //AUTOINCREMENTS ID AUTOMATICALLY IF NOT SENT
-            _db.Add(value);
-            _db.SaveChanges();
+            var newForum = new Forum { UserId = userId, Title = request.Title, };
+            var posts = request.Posts.Select(p => new Post { Created = p.Created, UserId = userId, Content = p.Content, Forum = newForum }).ToList();
+
+            newForum.Posts = posts;
+
+            _db.Forums.Add(newForum);
+            await _db.SaveChangesAsync();
+
+            var response = _db.Forums.Include(f => f.Posts).ToList();
+
+            return Ok(response);
         }
 
 
-        //PUT
+        //UPDATE
         [HttpPut("{id}")]
-        [ProducesResponseType(200)]
-        public void Put(int id, [FromBody] Forum value)
+        public async Task<ActionResult<Forum>> UpdateForum(int id)
         {
-            //NOT DONE YET
-            
+            var forum = await _db.Forums
+                .Include(f => f.Posts)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
+            if (forum is null) return NotFound("No forum with that id");
+            return Ok(forum);
         }
 
 
         //DELETE
         [HttpDelete("{id}")]
-        [ProducesResponseType(200)]
-        public void Delete(int id)
+        public async Task<ActionResult<Forum>> DeleteForum(int id)
         {
-            _db.Remove(_db.Forums.Where(Forum => Forum.Id == id).FirstOrDefault());
+            var forum = await _db.Forums.FirstOrDefaultAsync(f => f.Id == id);
+
+            _db.Forums.Remove(forum);
             _db.SaveChanges();
+
+            if (forum is null) return NotFound("No forum with that id");
+            return Ok(forum);
         }
 
 
-        //CREATE MOCKED DATA IF TABLE IS EMPTY
-        private void LoadMockedDataIfTableIsEmpty()
+        //-----------------------------------------------------POSTS-----------------------------------------------------
+
+
+        //GET ALL POSTS IN FORUM
+        [HttpGet("{ForumId}/posts")]
+        public async Task<ActionResult<Forum>> GetPostsByForumId(int ForumId)
         {
-            if (_db.Forums.Count() == 0)
-            {
-                string file = File.ReadAllText("./Mocked/Forums.json");
-                var Forums = JsonSerializer.Deserialize<List<Forum>>(file);
-                _db.AddRange(Forums);
-                _db.SaveChanges();
-            }
+            var forumPosts = _db.Posts.Where(p => p.ForumId == ForumId);
+
+            if (forumPosts.Count() == 0) return NotFound("No posts on this forum");
+            return Ok(forumPosts);
         }
+
+
+        //POST NEW POST TO FORUM 
+        [HttpPost("{ForumId}/posts/{userId}")]
+        public async Task<ActionResult<Post>> CreateForumPost(int ForumId, int userId, [FromBody] PostCreateDto request)
+        {
+            var newPost = new Post { Created = DateTime.Now, UserId = userId, ForumId = ForumId, Content = request.Content };
+
+            var posts = _db.Posts.Where(p => p.ForumId == ForumId).ToList(); // redundant (just for returning posts)
+            posts.Add(newPost); // redundant (just for returning posts)
+
+            _db.Posts.Add(newPost);
+            _db.SaveChanges();
+
+            return Ok(posts);
+        }
+
+        //REST OF THE OPERATIONS DO NOT REQUIRE FORUMID AND BELONG IN POSTSCONTROLLER 
     }
 }
