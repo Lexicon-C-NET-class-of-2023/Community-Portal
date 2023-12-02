@@ -1,9 +1,8 @@
 ﻿using Community_Portal;
 using Community_Portal.DTO_s;
+using Community_Portal.DTO_s.Forum;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
-using System.Text.Json;
 
 
 namespace API.Controllers
@@ -25,7 +24,7 @@ namespace API.Controllers
 
         //GET
         [HttpGet()]
-        public async Task<ActionResult<List<Forum>>> GetForums() => await _db.Forums.Include(f => f.Posts).ToListAsync();
+        public async Task<ActionResult<List<Forum>>> GetForums() => Ok(await _db.Forums.Include(f => f.Posts).ToListAsync());
 
 
 
@@ -47,7 +46,9 @@ namespace API.Controllers
         public async Task<ActionResult<Forum>> CreateForum(ForumCreateDTO request, int userId)
         {
             var newForum = new Forum { UserId = userId, Title = request.Title, };
-            var posts = request.Posts.Select(p => new Post { UserId = userId, Content = p.Content, Forum = newForum }).ToList();
+            var posts = request.Posts
+                .Select(p => new Post { UserId = userId, Content = p.Content, Forum = newForum })
+                .ToList();
 
             newForum.Posts = posts;
 
@@ -62,11 +63,19 @@ namespace API.Controllers
 
         //UPDATE
         [HttpPut("{id}")]
-        public async Task<ActionResult<Forum>> UpdateForum(int id)
+        public async Task<ActionResult<Forum>> UpdateForum(int id, [FromBody] ForumUpdateDTO request)
         {
+            //TODO only users with the correct userId should be able to change the title
             var forum = await _db.Forums
                 .Include(f => f.Posts)
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .Where(f => f.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (forum != null && request.Title != null && request.Title != "")
+            {
+                forum.Title = request.Title;
+                await _db.SaveChangesAsync();
+            }
 
             if (forum is null) return NotFound("No forum with that id");
             return Ok(forum);
@@ -77,7 +86,9 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Forum>> DeleteForum(int id)
         {
-            var forum = await _db.Forums.FirstOrDefaultAsync(f => f.Id == id);
+            var forum = await _db.Forums
+                .Where(f => f.Id == id)
+                .FirstOrDefaultAsync();
 
             _db.Forums.Remove(forum);
             _db.SaveChanges();

@@ -1,13 +1,15 @@
 ﻿using Community_Portal;
-using Community_Portal.DTO_s;
+using Community_Portal.DTO_s.Message;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+
 
 namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class MessagesController
+    public class MessagesController : ControllerBase
     {
         private readonly ILogger<MessagesController> _logger;
         private readonly AppDbContext _db;
@@ -21,70 +23,84 @@ namespace API.Controllers
 
         //GET
         [HttpGet()]
-        [ProducesResponseType(200)]
-        public IEnumerable<Message> Get()
+        public async Task<ActionResult<List<Message>>> GetMessages()
         {
-            LoadMockedDataIfTableIsEmpty();
-            return _db.Messages.ToList();
+            var messages = await _db.Messages.ToListAsync();
+            if (messages.Count() == 0) LoadMockedDataIfTableIsEmpty();
+
+            return Ok(messages);
         }
 
 
         //GET (BY ID)
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public Message Get(int id)
+        public async Task<ActionResult<Message>> GetMessageById(int id)
         {
-            return _db.Messages.Where(message => message.Id == id).FirstOrDefault();
+            var message = await _db.Messages
+                .Where(message => message.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (message == null) return NotFound("No message with that id");
+            return Ok(message);
         }
 
 
         //POST
-        [HttpPost()]
-        [ProducesResponseType(201)]
-        public void Post([FromBody] MessageCreateDTO value)
+        [HttpPost("{userId}")]
+        public async Task<ActionResult<Message>> CreateMessage(int userId, [FromBody] MessageCreateDTO request)
         {
-            //AUTOINCREMENTS ID AUTOMATICALLY IF NOT SENT
-            _db.Add(value);
-            _db.SaveChanges();
+            Message message = new Message { UserId = userId, Recipient = request.Recipient, Content = request.Content };
+
+            _db.Add(message);
+            await _db.SaveChangesAsync();
+
+            return Ok(message);
         }
 
 
         //PUT
         [HttpPut("{id}")]
-        [ProducesResponseType(200)]
-        public void Put(int id, [FromBody] Message value)
+        public async Task<ActionResult<Message>> UpdateMessage(int id, [FromBody] MessageUpdateDTO request)
         {
-            var message = _db.Messages.Where(message => message.Id == id).FirstOrDefault();
+            //TODO only users with the correct userId should be able to change the content
+            var message = _db.Messages
+                .Where(message => message.Id == id)
+                .FirstOrDefault();
 
-            if (value.Content != null && value.Content != "")
+            if (message != null && request.Content != null && request.Content != "")
             {
-                message.Content = value.Content;
-                _db.SaveChanges();
+                message.Content = request.Content;
+                await _db.SaveChangesAsync();
             }
+
+            if (message == null) return NotFound("No message with that id");
+            return Ok(message);
         }
 
 
         //DELETE
         [HttpDelete("{id}")]
-        [ProducesResponseType(200)]
-        public void Delete(int id)
+        public async Task<ActionResult<Boolean>> DeleteMessage(int id)
         {
-            _db.Remove(_db.Messages.Where(message => message.Id == id).FirstOrDefault());
-            _db.SaveChanges();
+            var message = _db.Messages
+                .Where(message => message.Id == id)
+                .FirstOrDefault();
+
+            _db.Messages.Remove(message);
+            await _db.SaveChangesAsync();
+
+            if (message == null) return NotFound("No message with that id");
+            return Ok(true);
         }
 
 
         //CREATE MOCKED DATA IF TABLE IS EMPTY
-        private void LoadMockedDataIfTableIsEmpty()
+        private async void LoadMockedDataIfTableIsEmpty()
         {
-            if (_db.Messages.Count() == 0)
-            {
-                string file = File.ReadAllText("./Mocked/messages.json");
-                var messages = JsonSerializer.Deserialize<List<Message>>(file);
-                _db.AddRange(messages);
-                _db.SaveChanges();
-            }
+            string file = System.IO.File.ReadAllText("./Mocked/messages.json");
+            var messages = JsonSerializer.Deserialize<List<Message>>(file);
+            _db.AddRange(messages);
+            await _db.SaveChangesAsync();
         }
     }
 }
