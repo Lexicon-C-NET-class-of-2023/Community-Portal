@@ -8,7 +8,7 @@ namespace Community_Portal
     public class Post
     {
         public int Id { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
         public int UserId { get; set; }
         public int ForumId { get; set; }
         [JsonIgnore]

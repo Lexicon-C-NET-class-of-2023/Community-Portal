@@ -1,4 +1,5 @@
 ﻿using Community_Portal;
+using Community_Portal.DTO_s;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -41,7 +42,7 @@ namespace API.Controllers
         //POST
         [HttpPost()]
         [ProducesResponseType(201)]
-        public void Post([FromBody] Message value)
+        public void Post([FromBody] MessageCreateDTO value)
         {
             //AUTOINCREMENTS ID AUTOMATICALLY IF NOT SENT
             _db.Add(value);

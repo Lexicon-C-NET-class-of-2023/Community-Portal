@@ -6,7 +6,7 @@ namespace Community_Portal
     public class User
     {
         public int Id { get; set; }
-        public DateTime Created { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
 
         [Required]
         [MaxLength(30)]

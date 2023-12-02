@@ -47,7 +47,7 @@ namespace API.Controllers
         public async Task<ActionResult<Forum>> CreateForum(ForumCreateDTO request, int userId)
         {
             var newForum = new Forum { UserId = userId, Title = request.Title, };
-            var posts = request.Posts.Select(p => new Post { Created = p.Created, UserId = userId, Content = p.Content, Forum = newForum }).ToList();
+            var posts = request.Posts.Select(p => new Post { UserId = userId, Content = p.Content, Forum = newForum }).ToList();
 
             newForum.Posts = posts;
 
@@ -105,7 +105,7 @@ namespace API.Controllers
         [HttpPost("{ForumId}/posts/{userId}")]
         public async Task<ActionResult<Post>> CreateForumPost(int ForumId, int userId, [FromBody] PostCreateDto request)
         {
-            var newPost = new Post { Created = DateTime.Now, UserId = userId, ForumId = ForumId, Content = request.Content };
+            var newPost = new Post { UserId = userId, ForumId = ForumId, Content = request.Content };
 
             var posts = _db.Posts.Where(p => p.ForumId == ForumId).ToList(); // redundant (just for returning posts)
             posts.Add(newPost); // redundant (just for returning posts)
