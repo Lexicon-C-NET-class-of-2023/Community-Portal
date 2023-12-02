@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Community_Portal
+namespace Community_Portal.Models
 {
     public class Message
     {
         public int Id { get; set; }
-        public DateTime Created { get; set; } = DateTime.Now;   
+        public DateTime Created { get; set; } = DateTime.Now;
         public int UserId { get; set; }
         public int Recipient { get; set; }
 

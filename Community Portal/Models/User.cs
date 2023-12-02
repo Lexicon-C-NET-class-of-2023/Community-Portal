@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace Community_Portal
+namespace Community_Portal.Models
 {
     public class User
     {

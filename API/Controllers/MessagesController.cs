@@ -1,5 +1,6 @@
 ﻿using Community_Portal;
 using Community_Portal.DTO_s.Message;
+using Community_Portal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -40,7 +41,7 @@ namespace API.Controllers
                 .Where(message => message.Id == id)
                 .FirstOrDefaultAsync();
 
-            if (message == null) return NotFound("No message with that id");
+            if (message == null) return NotFound(Services.NotFoundMessage("message"));
             return Ok(message);
         }
 
@@ -73,7 +74,7 @@ namespace API.Controllers
                 await _db.SaveChangesAsync();
             }
 
-            if (message == null) return NotFound("No message with that id");
+            if (message == null) return NotFound(Services.NotFoundMessage("message"));
             return Ok(message);
         }
 
@@ -89,7 +90,7 @@ namespace API.Controllers
             _db.Messages.Remove(message);
             await _db.SaveChangesAsync();
 
-            if (message == null) return NotFound("No message with that id");
+            if (message == null) return NotFound(Services.NotFoundMessage("message"));
             return Ok(true);
         }
 

@@ -1,4 +1,4 @@
-﻿using Community_Portal;
+﻿using Community_Portal.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace API

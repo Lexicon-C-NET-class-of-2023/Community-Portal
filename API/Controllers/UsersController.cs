@@ -1,13 +1,16 @@
 ﻿using Community_Portal;
-using Microsoft.AspNetCore.Http;
+using Community_Portal.DTO_s;
+using Community_Portal.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+
 
 namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class UsersController
+    public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
         private readonly AppDbContext _db;
@@ -17,70 +20,79 @@ namespace API.Controllers
             _logger = logger;
             _db = db;
         }
-
+        //TODO HASH PASSWORD
 
         //GET
         [HttpGet()]
-        [ProducesResponseType(200)]
-        public IEnumerable<User> Get()
+        public async Task<ActionResult<List<User>>> GetUsers()
         {
-            LoadMockedDataIfTableIsEmpty();
-            return _db.Users.ToList();
+            var users = await _db.Users.ToListAsync();
+            if (users.Count() == 0) LoadMockedDataIfTableIsEmpty();
+
+            return Ok(users);
         }
 
 
         //GET (BY ID)
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public User Get(int id)
+        public async Task<ActionResult<User>> GetUserById(int id)
         {
-            return _db.Users.Where(user => user.Id == id).FirstOrDefault();
+            var user = await _db.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
+
+            if (user == null) return NotFound(Services.NotFoundMessage("user"));
+            return Ok(user);
         }
 
 
         //POST
         [HttpPost()]
-        [ProducesResponseType(201)]
-        public void Post([FromBody] User value)
+        public async Task<ActionResult<User>> CreateUser([FromBody] UserCreateDTO request)
         {
-            //AUTOINCREMENTS ID AUTOMATICALLY IF NOT SENT
-            _db.Add(value);
-            _db.SaveChanges();
+            var user = new User { FirstName = request.FirstName, LastName = request.LastName, Email = request.Email, Password = request.password };
+
+            _db.Add(request);
+            await _db.SaveChangesAsync();
+
+            return Ok(user);
         }
 
 
         //PUT
         [HttpPut("{id}")]
-        [ProducesResponseType(200)]
-        public void Put(int id, [FromBody] User value)
+        public async Task<ActionResult<User>> UpdateUser(int id, [FromBody] User value)
         {
-            var User = _db.Users.Where(user => user.Id == id).FirstOrDefault();
+            var user = await _db.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
 
-           //NOT DONE YET
+            //TODO--------------------
+
+            //await _db.SaveChangesAsync();
+
+            if (user == null) return NotFound(Services.NotFoundMessage("user"));
+            return Ok(user);
         }
 
 
         //DELETE
         [HttpDelete("{id}")]
-        [ProducesResponseType(200)]
-        public void Delete(int id)
+        public async Task<ActionResult<User>> DeleteUser(int id)
         {
-            _db.Remove(_db.Users.Where(user => user.Id == id).FirstOrDefault());
+            var user = await _db.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
+
+            _db.Remove(user);
             _db.SaveChanges();
+
+            if (user == null) return NotFound(Services.NotFoundMessage("user"));
+            return Ok(user);
         }
 
 
         //CREATE MOCKED DATA IF TABLE IS EMPTY
         private void LoadMockedDataIfTableIsEmpty()
         {
-            if (_db.Users.Count() == 0)
-            {
-                string file = File.ReadAllText("./Mocked/users.json");
-                var user = JsonSerializer.Deserialize<List<User>>(file);
-                _db.AddRange(user);
-                _db.SaveChanges();
-            }
+            string file = System.IO.File.ReadAllText("./Mocked/users.json");
+            var user = JsonSerializer.Deserialize<List<User>>(file);
+            _db.AddRange(user);
+            _db.SaveChanges();
         }
     }
 }

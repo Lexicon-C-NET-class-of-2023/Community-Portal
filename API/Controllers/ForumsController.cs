@@ -1,6 +1,7 @@
 ﻿using Community_Portal;
 using Community_Portal.DTO_s;
 using Community_Portal.DTO_s.Forum;
+using Community_Portal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -36,7 +37,7 @@ namespace API.Controllers
                 .Include(f => f.Posts)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
-            if (forum is null) return NotFound("No forum with that id");
+            if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
             return Ok(forum);
         }
 
@@ -77,7 +78,7 @@ namespace API.Controllers
                 await _db.SaveChangesAsync();
             }
 
-            if (forum is null) return NotFound("No forum with that id");
+            if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
             return Ok(forum);
         }
 
@@ -93,7 +94,7 @@ namespace API.Controllers
             _db.Forums.Remove(forum);
             _db.SaveChanges();
 
-            if (forum is null) return NotFound("No forum with that id");
+            if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
             return Ok(forum);
         }
 

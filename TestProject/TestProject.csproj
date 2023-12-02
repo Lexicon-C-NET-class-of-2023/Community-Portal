@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Community Portal\Models.csproj" />
+    <ProjectReference Include="..\Community Portal\Core.csproj" />
   </ItemGroup>
 
 </Project>
