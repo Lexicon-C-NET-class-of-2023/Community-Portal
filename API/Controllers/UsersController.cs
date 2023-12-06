@@ -78,8 +78,16 @@ namespace API.Controllers
         {
             var user = await _db.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
 
-            _db.Remove(user);
-            _db.SaveChanges();
+            try
+            {
+                _db.Remove(user);
+                _db.SaveChanges();
+            }
+            catch (ArgumentNullException ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+            }
+
 
             if (user == null) return NotFound(Services.NotFoundMessage("user"));
             return Ok(user);

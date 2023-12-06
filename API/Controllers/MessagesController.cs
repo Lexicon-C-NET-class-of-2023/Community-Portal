@@ -87,8 +87,16 @@ namespace API.Controllers
                 .Where(message => message.Id == id)
                 .FirstOrDefault();
 
-            _db.Messages.Remove(message);
-            await _db.SaveChangesAsync();
+            try
+            {
+                _db.Messages.Remove(message);
+                await _db.SaveChangesAsync();
+            }
+            catch (ArgumentNullException ex)
+            {
+                await Console.Out.WriteLineAsync(ex.Message);
+            }
+
 
             if (message == null) return NotFound(Services.NotFoundMessage("message"));
             return Ok(true);

@@ -1,18 +1,18 @@
-﻿using System.ComponentModel;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace Community_Portal.Models
 {
-    public class Forum
+    public class News
     {
         public int Id { get; set; }
         public int UserId { get; set; }
 
         [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
-        [DefaultValue("Forum Title")]
+        [DefaultValue("News Title")]
         public string? Title { get; set; }
-        public List<ForumPost> ForumPosts { get; set; } = new List<ForumPost>();
+        public List<NewsPost> NewsPosts { get; set; } = new List<NewsPost>();
     }
 }

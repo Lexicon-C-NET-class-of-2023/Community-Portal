@@ -1,6 +1,6 @@
 ﻿using Community_Portal;
 using Community_Portal.DTO_s;
-using Community_Portal.DTO_s.Forum;
+using Community_Portal.DTO_s.News;
 using Community_Portal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +10,13 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class ForumsController : ControllerBase
+    public class NewsController : ControllerBase
     {
-        private readonly ILogger<ForumsController> _logger;
+        private readonly ILogger<NewsController> _logger;
         private readonly AppDbContext _db;
 
 
-        public ForumsController(ILogger<ForumsController> logger, AppDbContext db)
+        public NewsController(ILogger<NewsController> logger, AppDbContext db)
         {
             _logger = logger;
             _db = db;
@@ -25,16 +25,16 @@ namespace API.Controllers
 
         //GET
         [HttpGet()]
-        public async Task<ActionResult<List<Forum>>> GetForums() => Ok(await _db.Forums.Include(f => f.ForumPosts).ToListAsync());
+        public async Task<ActionResult<List<News>>> GetNews() => Ok(await _db.News.Include(f => f.NewsPosts).ToListAsync());
 
 
 
         //GET BY ID
         [HttpGet("{id}")]
-        public async Task<ActionResult<Forum>> GetForumById(int id)
+        public async Task<ActionResult<News>> GetNewsById(int id)
         {
-            var forum = await _db.Forums
-                .Include(f => f.ForumPosts)
+            var forum = await _db.News
+                .Include(f => f.NewsPosts)
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
@@ -44,19 +44,20 @@ namespace API.Controllers
 
         //POST
         [HttpPost("{userId}")]
-        public async Task<ActionResult<Forum>> CreateForum(ForumCreateDTO request, int userId)
+        public async Task<ActionResult<News>> CreateNews(NewsCreateDTO request, int userId)
         {
-            var newForum = new Forum { UserId = userId, Title = request.Title, };
+            var newNews = new News { UserId = userId, Title = request.Title, };
+
             var posts = request.Posts
-                .Select(p => new ForumPost { UserId = userId, Content = p.Content, Forum = newForum })
+                .Select(p => new NewsPost { UserId = userId, Content = p.Content, News = newNews })
                 .ToList();
 
-            newForum.ForumPosts = posts;
+            newNews.NewsPosts = posts;
 
-            _db.Forums.Add(newForum);
+            _db.News.Add(newNews);
             await _db.SaveChangesAsync();
 
-            var response = _db.Forums.Include(f => f.ForumPosts).ToList();
+            var response = _db.News.Include(f => f.NewsPosts).ToList();
 
             return Ok(response);
         }
@@ -64,11 +65,11 @@ namespace API.Controllers
 
         //UPDATE
         [HttpPut("{id}")]
-        public async Task<ActionResult<Forum>> UpdateForum(int id, [FromBody] ForumUpdateDTO request)
+        public async Task<ActionResult<News>> UpdateNews(int id, [FromBody] NewsUpdateDTO request)
         {
             //TODO only users with the correct userId should be able to change the title
-            var forum = await _db.Forums
-                .Include(f => f.ForumPosts)
+            var forum = await _db.News
+                .Include(f => f.NewsPosts)
                 .Where(f => f.Id == id)
                 .FirstOrDefaultAsync();
 
@@ -85,22 +86,21 @@ namespace API.Controllers
 
         //DELETE
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Forum>> DeleteForum(int id)
+        public async Task<ActionResult<News>> DeleteNews(int id)
         {
-            var forum = await _db.Forums
+            var forum = await _db.News
                 .Where(f => f.Id == id)
                 .FirstOrDefaultAsync();
 
             try
             {
-                _db.Forums.Remove(forum);
+                _db.News.Remove(forum);
                 _db.SaveChanges();
             }
             catch (ArgumentNullException ex)
             {
                 await Console.Out.WriteLineAsync(ex.Message);
             }
-
 
             if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
             return Ok(forum);
@@ -111,10 +111,10 @@ namespace API.Controllers
 
 
         //GET ALL POSTS IN FORUM
-        [HttpGet("{ForumId}/posts")]
-        public async Task<ActionResult<Forum>> GetPostsByForumId(int ForumId)
+        [HttpGet("{NewsId}/posts")]
+        public async Task<ActionResult<News>> GetPostsByNewsId(int NewsId)
         {
-            var forumPosts = _db.ForumPosts.Where(p => p.ForumId == ForumId);
+            var forumPosts = _db.NewsPosts.Where(p => p.NewsId == NewsId);
 
             if (forumPosts.Count() == 0) return NotFound("No posts on this forum");
             return Ok(forumPosts);
@@ -122,15 +122,15 @@ namespace API.Controllers
 
 
         //POST NEW POST TO FORUM 
-        [HttpPost("{ForumId}/posts/{userId}")]
-        public async Task<ActionResult<Post>> CreateForumPost(int ForumId, int userId, [FromBody] PostCreateDto request)
+        [HttpPost("{NewsId}/posts/{userId}")]
+        public async Task<ActionResult<Post>> CreateNewsPost(int NewsId, int userId, [FromBody] PostCreateDto request)
         {
-            var newPost = new ForumPost { UserId = userId, ForumId = ForumId, Content = request.Content };
+            var newPost = new NewsPost { UserId = userId, NewsId = NewsId, Content = request.Content };
 
-            var posts = _db.ForumPosts.Where(p => p.ForumId == ForumId).ToList(); // redundant (just for returning posts)
+            var posts = _db.NewsPosts.Where(p => p.NewsId == NewsId).ToList(); // redundant (just for returning posts)
             posts.Add(newPost); // redundant (just for returning posts)
 
-            _db.ForumPosts.Add(newPost);
+            _db.NewsPosts.Add(newPost);
             _db.SaveChanges();
 
             return Ok(posts);
