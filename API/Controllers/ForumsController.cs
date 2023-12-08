@@ -2,6 +2,7 @@
 using Community_Portal.DTO_s;
 using Community_Portal.DTO_s.Forum;
 using Community_Portal.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [EnableCors("_myAllowSpecificOrigins")]
     public class ForumsController : ControllerBase
     {
         private readonly ILogger<ForumsController> _logger;

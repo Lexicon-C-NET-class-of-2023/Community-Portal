@@ -8,6 +8,21 @@ IConfigurationRoot configuration = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json")
     .Build();
 
+//CORS
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var MyAllowAuthorizationHeader = "_myAllowAuthorizationHeader";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                builder => builder.WithOrigins("http://127.0.0.1:3000")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials());
+
+    options.AddPolicy(MyAllowAuthorizationHeader,
+                builder => builder.AllowAnyHeader().WithExposedHeaders("Authorization"));
+});
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -19,6 +34,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -26,6 +45,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(MyAllowSpecificOrigins);
+app.UseCors(MyAllowAuthorizationHeader);
 
 app.UseAuthorization();
 

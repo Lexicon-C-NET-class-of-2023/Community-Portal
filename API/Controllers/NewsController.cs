@@ -2,6 +2,7 @@
 using Community_Portal.DTO_s;
 using Community_Portal.DTO_s.News;
 using Community_Portal.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [EnableCors("_myAllowSpecificOrigins")]
     public class NewsController : ControllerBase
     {
         private readonly ILogger<NewsController> _logger;

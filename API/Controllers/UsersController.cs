@@ -1,6 +1,7 @@
 ﻿using Community_Portal;
 using Community_Portal.DTO_s;
 using Community_Portal.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
@@ -10,6 +11,7 @@ namespace API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [EnableCors("_myAllowSpecificOrigins")]
     public class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
