@@ -26,9 +26,13 @@ namespace API.Controllers
 
         //GET
         [HttpGet()]
-        public async Task<ActionResult<List<Message>>> GetMessages()
+        public async Task<ActionResult<List<Message>>> GetMessages(int userId)
         {
-            var messages = await _db.Messages.ToListAsync();
+            List<Message> messages = new List<Message>();
+
+            if (userId != 0) messages = await _db.Messages.Where(m => (m.UserId == userId) || (m.Recipient == userId)).ToListAsync();
+            else messages = await _db.Messages.ToListAsync();
+
             if (messages.Count() == 0) LoadMockedDataIfTableIsEmpty();
 
             return Ok(messages);
