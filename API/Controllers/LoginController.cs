@@ -24,14 +24,16 @@ namespace API.Controllers
 
         //POST
         [HttpPost()]
-        public async Task<ActionResult<UserDTO>> CreateMessage([FromBody] LoginDTO request)
+        public async Task<ActionResult<UserDTO>> LoginUser([FromBody] LoginDTO request)
         {
+            Console.WriteLine(request);
             UserDTO user = _db.Users
                 .Where(u => u.Email == request.email && u.Password == request.password)
                 .Select(u => new UserDTO(u.Id, u.Created, u.FirstName, u.LastName, u.Email))
                 .FirstOrDefault();
 
-            if (user.Email == null) return NotFound(Services.NotFoundMessage("login"));
+
+            if (user.Email == null) return Unauthorized(Services.UnauthorizedMessage("login"));
             return Ok(user);
         }
     }
