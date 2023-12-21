@@ -125,7 +125,7 @@ namespace API.Controllers
 
         //POST NEW POST TO FORUM 
         [HttpPost("{NewsId}/posts/{userId}")]
-        public async Task<ActionResult<Post>> CreateNewsPost(int NewsId, int userId, [FromBody] PostCreateDto request)
+        public async Task<ActionResult<Post>> CreateNewsPost(int NewsId, int userId, [FromBody] PostCreateDTO request)
         {
             var newPost = new NewsPost { UserId = userId, NewsId = NewsId, Content = request.Content };
 

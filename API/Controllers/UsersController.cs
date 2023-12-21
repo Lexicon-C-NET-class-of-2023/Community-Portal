@@ -1,5 +1,6 @@
 ﻿using Community_Portal;
 using Community_Portal.DTO_s;
+using Community_Portal.DTO_s.User;
 using Community_Portal.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
