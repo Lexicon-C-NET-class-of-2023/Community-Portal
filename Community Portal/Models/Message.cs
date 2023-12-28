@@ -8,7 +8,13 @@ namespace Community_Portal.Models
         public int Id { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public int UserId { get; set; }
+
+        [Column(TypeName = "varchar(200)")]
+        public string SenderName { get; set; }
+
         public int Recipient { get; set; }
+        [Column(TypeName = "varchar(200)")]
+        public string RecipientName { get; set; }
 
         [Required]
         [MaxLength(200)]

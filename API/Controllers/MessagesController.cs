@@ -30,9 +30,17 @@ namespace API.Controllers
         {
             List<Message> messages = new List<Message>();
 
-            if (userId != 0) messages = await _db.Messages.Where(m => (m.UserId == userId) || (m.Recipient == userId)).ToListAsync();
-            else messages = await _db.Messages.ToListAsync();
+            if (userId != 0)
+            {
+                messages = await _db.Messages
+                    .Where(m => (m.UserId == userId) || (m.Recipient == userId))
+                    .OrderByDescending(m => m.Created)
+                    .GroupBy(m => new { m.SenderName, m.RecipientName })
+                    .Select(m => m.First())
+                    .ToListAsync();
+            }
 
+            else messages = await _db.Messages.ToListAsync();
             if (messages.Count() == 0) LoadMockedDataIfTableIsEmpty();
 
             return Ok(messages);
@@ -57,6 +65,12 @@ namespace API.Controllers
         public async Task<ActionResult<Message>> CreateMessage(int userId, [FromBody] MessageCreateDTO request)
         {
             Message message = new Message { UserId = userId, Recipient = request.Recipient, Content = request.Content };
+
+            var sender = _db.Users.Where(u => u.Id == userId).Select(u => new { u.FirstName, u.LastName }).FirstOrDefault();
+            var reciever = _db.Users.Where(u => u.Id == request.Recipient).Select(u => new { u.FirstName, u.LastName }).FirstOrDefault();
+
+            message.SenderName = $"{sender.FirstName} {sender.LastName}";
+            message.RecipientName = $"{reciever.FirstName} {reciever.LastName}";
 
             _db.Add(message);
             await _db.SaveChangesAsync();
@@ -107,6 +121,28 @@ namespace API.Controllers
             if (message == null) return NotFound(Services.NotFoundMessage("message"));
             return Ok(true);
         }
+
+
+        //-------------------------------------------------------------------------------------
+
+
+        //GET
+        [HttpGet("{userId}/message/{recipientId}")]
+        public async Task<ActionResult<List<Message>>> GetConversation(int userId, int recipientId)
+        {
+            List<Message> messages = new List<Message>();
+
+            Console.WriteLine(recipientId);
+            messages = await _db.Messages
+                .Where(n => (n.UserId == userId) && (n.Recipient == recipientId) || (n.UserId == recipientId) && (n.Recipient == userId))
+                .ToListAsync();
+
+            return Ok(messages);
+        }
+
+
+
+
 
 
         //CREATE MOCKED DATA IF TABLE IS EMPTY

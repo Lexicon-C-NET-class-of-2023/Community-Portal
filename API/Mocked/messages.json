@@ -3,70 +3,90 @@
     "id": 1,
     "Created": "2019-01-06T17:16:40",
     "UserId": 1,
+    "SenderName": "Anders Söderberg",
     "Recipient": 2,
+    "RecipientName": "Constantin Pantesi",
     "Content": "Contrast phlebogram NOS"
   },
   {
     "id": 2,
     "Created": "2019-01-06T17:16:40",
     "UserId": 2,
+    "SenderName": "Constantin Pantesi",
     "Recipient": 3,
+    "RecipientName": "Fateh Bouretoua",
     "Content": "Esophageal repair NEC"
   },
   {
     "id": 3,
     "Created": "2019-01-06T17:16:40",
     "UserId": 3,
+    "SenderName": "Fateh Bouretoua",
     "Recipient": 4,
+    "RecipientName": "Fadel Alajati",
     "Content": "Destruct joint les NOS"
   },
   {
     "id": 4,
     "Created": "2019-01-06T17:16:40",
     "UserId": 4,
-    "Recipient": 5,
+    "SenderName": "Fadel Alajati",
+    "Recipient": 1,
+    "RecipientName": "Anders Söderberg",
     "Content": "Dilation anal sphincter"
   },
   {
     "id": 5,
     "Created": "2019-01-06T17:16:40",
-    "UserId": 5,
-    "Recipient": 6,
+    "UserId": 1,
+    "SenderName": "Anders Söderberg",
+    "Recipient": 3,
+    "RecipientName": "Fateh Bouretoua",
     "Content": "Educational therapy"
   },
   {
     "id": 6,
     "Created": "2019-01-06T17:16:40",
-    "UserId": 6,
-    "Recipient": 7,
+    "UserId": 1,
+    "SenderName": "Anders Söderberg",
+    "Recipient": 2,
+    "RecipientName": "Constantin Pantesi",
     "Content": "Total body perfusion"
   },
   {
     "id": 7,
     "Created": "2019-01-06T17:16:40",
-    "UserId": 7,
-    "Recipient": 8,
+    "UserId": 2,
+    "SenderName": "Constantin Pantesi",
+    "Recipient": 1,
+    "RecipientName": "Anders Söderberg",
     "Content": "Lap remove ovaries/tubes"
   },
   {
     "id": 8,
     "Created": "2019-01-06T17:16:40",
-    "UserId": 8,
-    "Recipient": 9,
+    "UserId": 1,
+    "SenderName": "Anders Söderberg",
+    "Recipient": 2,
+    "RecipientName": "Constantin Pantesi",
     "Content": "Percut prostatic aspirat"
   },
   {
     "id": 9,
     "Created": "2019-01-06T17:16:40",
-    "UserId": 9,
-    "Recipient": 10,
+    "UserId": 2,
+    "SenderName": "Constantin Pantesi",
+    "Recipient": 1,
+    "RecipientName": "Anders Söderberg",
     "Content": "Suture of tracheal lacer"
   },
   {
     "id": 10,
     "Created": "2019-01-06T17:16:40",
-    "UserId": 10,
-    "Recipient": 1,
+    "UserId": 1,
+    "SenderName": "Anders Söderberg",
+    "Recipient": 2,
+    "RecipientName": "Constantin Pantesi",
     "Content": "Refusion of atlas-axis"
   }
 ]
