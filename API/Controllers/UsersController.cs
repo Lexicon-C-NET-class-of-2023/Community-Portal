@@ -1,5 +1,4 @@
 ﻿using Community_Portal;
-using Community_Portal.DTO_s;
 using Community_Portal.DTO_s.User;
 using Community_Portal.Models;
 using Microsoft.AspNetCore.Cors;
@@ -51,9 +50,9 @@ namespace API.Controllers
         [HttpPost()]
         public async Task<ActionResult<User>> CreateUser([FromBody] UserCreateDTO request)
         {
-            var user = new User { FirstName = request.FirstName, LastName = request.LastName, Email = request.Email, Password = request.password };
+            var user = new User { FirstName = request.FirstName, LastName = request.LastName, Email = request.Email, Password = request.Password };
 
-            _db.Add(request);
+            _db.Users.Add(user);
             await _db.SaveChangesAsync();
 
             return Ok(user);

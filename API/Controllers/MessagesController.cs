@@ -126,9 +126,9 @@ namespace API.Controllers
         //-------------------------------------------------------------------------------------
 
 
-        //GET
+        //GET (BY USERID & RECIPIENTID)
         [HttpGet("{userId}/message/{recipientId}")]
-        public async Task<ActionResult<List<Message>>> GetConversation(int userId, int recipientId)
+        public async Task<ActionResult<List<Message>>> GetPrivateConversation(int userId, int recipientId)
         {
             List<Message> messages = new List<Message>();
 
