@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace Community_Portal.Models
 {
@@ -7,6 +8,9 @@ namespace Community_Portal.Models
     {
         public int Id { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
+
+        [DefaultValue(false)]
+        public bool Admin { get; set; }
 
         [Required]
         [MaxLength(30)]

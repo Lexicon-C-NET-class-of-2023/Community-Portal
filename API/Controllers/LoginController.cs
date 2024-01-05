@@ -29,7 +29,7 @@ namespace API.Controllers
             Console.WriteLine(request);
             UserDTO user = _db.Users
                 .Where(u => u.Email == request.email && u.Password == request.password)
-                .Select(u => new UserDTO(u.Id, u.Created, u.FirstName, u.LastName, u.Email))
+                .Select(u => new UserDTO(u.Id, u.Created, u.Admin, u.FirstName, u.LastName, u.Email))
                 .FirstOrDefault();
 
 
