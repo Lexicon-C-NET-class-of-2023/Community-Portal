@@ -7,12 +7,15 @@ namespace Community_Portal.Models
     public class News
     {
         public int Id { get; set; }
+        public DateTime Created { get; set; } = DateTime.Now;
         public int UserId { get; set; }
 
-        [MaxLength(50)]
         [Column(TypeName = "varchar(50)")]
         [DefaultValue("News Title")]
         public string? Title { get; set; }
-        public List<NewsPost> NewsPosts { get; set; } = new List<NewsPost>();
+
+        [Column(TypeName = "varchar(2000)")]
+        [DefaultValue("Text content")]
+        public string? Content { get; set; }
     }
 }

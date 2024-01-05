@@ -63,7 +63,9 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<User>> UpdateUser(int id, [FromBody] User value)
         {
-            var user = await _db.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
+            var user = await _db.Users
+                .Where(user => user.Id == id)
+                .FirstOrDefaultAsync();
 
             //TODO--------------------
 
@@ -78,7 +80,9 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<User>> DeleteUser(int id)
         {
-            var user = await _db.Users.Where(user => user.Id == id).FirstOrDefaultAsync();
+            var user = await _db.Users
+                .Where(user => user.Id == id)
+                .FirstOrDefaultAsync();
 
             try
             {

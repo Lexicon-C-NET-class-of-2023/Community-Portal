@@ -10,7 +10,7 @@ namespace Community_Portal.Models
         public int Id { get; set; }
         public DateTime Created { get; set; } = DateTime.Now;
         public int UserId { get; set; }
-       
+
         [Required]
         [MaxLength(200)]
         [Column(TypeName = "varchar(200)")]
@@ -23,12 +23,5 @@ namespace Community_Portal.Models
         public int ForumId { get; set; }
         [JsonIgnore]
         public Forum Forum { get; set; }
-    }
-
-    public class NewsPost : Post
-    {
-        public int NewsId { get; set; }
-        [JsonIgnore]
-        public News News { get; set; }
     }
 }

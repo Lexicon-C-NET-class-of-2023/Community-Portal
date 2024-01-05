@@ -27,62 +27,59 @@ namespace API.Controllers
 
         //GET
         [HttpGet()]
-        public async Task<ActionResult<List<News>>> GetNews() => Ok(await _db.News.Include(f => f.NewsPosts).ToListAsync());
+        public async Task<ActionResult<List<News>>> GetNews()
+        {
+            List<News> news = await _db.News.ToListAsync();
 
+
+            if (news is null) return NotFound(Services.NotFoundMessage("news"));
+            return Ok(news);
+        }
 
 
         //GET BY ID
         [HttpGet("{id}")]
         public async Task<ActionResult<News>> GetNewsById(int id)
         {
-            var forum = await _db.News
-                .Include(f => f.NewsPosts)
-                .FirstOrDefaultAsync(f => f.Id == id);
+            News newsArticle = await _db.News
+                .Where(n => n.Id == id)
+                .FirstOrDefaultAsync();
 
-            if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
-            return Ok(forum);
+            if (newsArticle is null) return NotFound(Services.NotFoundMessage("news"));
+            return Ok(newsArticle);
         }
 
 
-        //POST
+        ////POST
         [HttpPost("{userId}")]
         public async Task<ActionResult<News>> CreateNews(NewsCreateDTO request, int userId)
         {
-            var newNews = new News { UserId = userId, Title = request.Title, };
+            News newsArticle = new News { UserId = userId, Title = request.Title, Content = request.Content };
 
-            var posts = request.Posts
-                .Select(p => new NewsPost { UserId = userId, Content = p.Content, News = newNews })
-                .ToList();
+            _db.News.Add(newsArticle);
+            _db.SaveChanges();
 
-            newNews.NewsPosts = posts;
-
-            _db.News.Add(newNews);
-            await _db.SaveChangesAsync();
-
-            var response = _db.News.Include(f => f.NewsPosts).ToList();
-
-            return Ok(response);
+            if (newsArticle is null) return NotFound(Services.NotFoundMessage("news"));
+            return Ok(newsArticle);
         }
 
 
-        //UPDATE
+        ////UPDATE
         [HttpPut("{id}")]
         public async Task<ActionResult<News>> UpdateNews(int id, [FromBody] NewsUpdateDTO request)
         {
-            //TODO only users with the correct userId should be able to change the title
-            var forum = await _db.News
-                .Include(f => f.NewsPosts)
-                .Where(f => f.Id == id)
+            var newsArticle = await _db.News
+                .Where(u => u.Id == id)
                 .FirstOrDefaultAsync();
 
-            if (forum != null && request.Title != null && request.Title != "")
-            {
-                forum.Title = request.Title;
-                await _db.SaveChangesAsync();
-            }
+            if (newsArticle is null) return NotFound(Services.NotFoundMessage("news"));
 
-            if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
-            return Ok(forum);
+            newsArticle.Title = request.Title;
+            newsArticle.Content = request.Content;
+
+            _db.SaveChanges();
+
+            return Ok(newsArticle);
         }
 
 
@@ -90,13 +87,13 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<News>> DeleteNews(int id)
         {
-            var forum = await _db.News
-                .Where(f => f.Id == id)
+            var newsArticle = await _db.News
+                .Where(n => n.Id == id)
                 .FirstOrDefaultAsync();
 
             try
             {
-                _db.News.Remove(forum);
+                _db.News.Remove(newsArticle);
                 _db.SaveChanges();
             }
             catch (ArgumentNullException ex)
@@ -104,40 +101,8 @@ namespace API.Controllers
                 await Console.Out.WriteLineAsync(ex.Message);
             }
 
-            if (forum is null) return NotFound(Services.NotFoundMessage("forum"));
-            return Ok(forum);
+            if (newsArticle is null) return NotFound(Services.NotFoundMessage("news"));
+            return Ok(newsArticle);
         }
-
-
-        //-----------------------------------------------------POSTS-----------------------------------------------------
-
-
-        //GET ALL POSTS IN FORUM
-        [HttpGet("{NewsId}/posts")]
-        public async Task<ActionResult<News>> GetPostsByNewsId(int NewsId)
-        {
-            var forumPosts = _db.NewsPosts.Where(p => p.NewsId == NewsId);
-
-            if (forumPosts.Count() == 0) return NotFound("No posts on this forum");
-            return Ok(forumPosts);
-        }
-
-
-        //POST NEW POST TO FORUM 
-        [HttpPost("{NewsId}/posts/{userId}")]
-        public async Task<ActionResult<Post>> CreateNewsPost(int NewsId, int userId, [FromBody] PostCreateDTO request)
-        {
-            var newPost = new NewsPost { UserId = userId, NewsId = NewsId, Content = request.Content };
-
-            var posts = _db.NewsPosts.Where(p => p.NewsId == NewsId).ToList(); // redundant (just for returning posts)
-            posts.Add(newPost); // redundant (just for returning posts)
-
-            _db.NewsPosts.Add(newPost);
-            _db.SaveChanges();
-
-            return Ok(posts);
-        }
-
-        //REST OF THE OPERATIONS DO NOT REQUIRE FORUMID AND BELONG IN POSTSCONTROLLER 
     }
 }

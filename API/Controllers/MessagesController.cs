@@ -41,7 +41,7 @@ namespace API.Controllers
             }
 
             else messages = await _db.Messages.ToListAsync();
-            if (messages.Count() == 0) LoadMockedDataIfTableIsEmpty();
+            //if (messages.Count() == 0) LoadMockedDataIfTableIsEmpty();
 
             return Ok(messages);
         }
@@ -150,7 +150,7 @@ namespace API.Controllers
         {
             string file = System.IO.File.ReadAllText("./Mocked/messages.json");
             var messages = JsonSerializer.Deserialize<List<Message>>(file);
-            _db.AddRange(messages);
+            _db.Messages.AddRange(messages);
             await _db.SaveChangesAsync();
         }
     }

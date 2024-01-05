@@ -12,6 +12,5 @@ namespace API
         public DbSet<News> News { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<ForumPost> ForumPosts { get; set; }
-        public DbSet<NewsPost> NewsPosts { get; set; }
     }
 }
